@@ -2,6 +2,7 @@ package fr.isen.java2.db.daos;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.sql.*;
 
 
@@ -44,7 +45,7 @@ public class GenreDao {
 	 * @param name the name of the genre to retrieve
 	 * @return the Genre object if found, null otherwise
 	 */
-	public Genre getGenre(String name) {
+	public Optional<Genre> getGenre(String name) {
 		try (Connection connection = DataSourceFactory.getConnection();
 			 PreparedStatement statement = connection.prepareStatement("SELECT * FROM genre WHERE name = ?")) {
 			
@@ -57,7 +58,7 @@ public class GenreDao {
 				if (resultSet.next()) {
 					int id = resultSet.getInt("idgenre");
 					String genreName = resultSet.getString("name");
-					return new Genre(id, genreName);
+					return Optional.of(new Genre(id, genreName));
 				}
 			}
 			
@@ -65,8 +66,9 @@ public class GenreDao {
 			e.printStackTrace();
 		}
 		
-		// Return null if genre not found
-		return null;
+		// Return Optional.empty() if no genre was found or if an exception occurred
+		return Optional.empty();
+		
 	}
 
 	/**
