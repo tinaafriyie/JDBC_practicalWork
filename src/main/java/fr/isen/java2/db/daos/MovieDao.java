@@ -13,7 +13,7 @@ import fr.isen.java2.db.entities.Movie;
 public class MovieDao {
 
 	/**
-	 * Lists all movies with their associated genres.
+	 * This lists all movies with their associated genres.
 	 * 
 	 * @return a list of all movies
 	 */
@@ -27,7 +27,7 @@ public class MovieDao {
 			 ResultSet resultSet = statement.executeQuery(query)) {
 			
 			while (resultSet.next()) {
-				// Extract movie fields - use "idmovie" not "id"
+				// To extract movie fields 
 				int movieId = resultSet.getInt("idmovie");
 				String title = resultSet.getString("title");
 				Date releaseDate = resultSet.getDate("release_date");
@@ -35,12 +35,12 @@ public class MovieDao {
 				String director = resultSet.getString("director");
 				String summary = resultSet.getString("summary");
 				
-				// Extract genre fields
+				// To extract genre fields
 				int genreId = resultSet.getInt("idgenre");
 				String genreName = resultSet.getString("name");
 				Genre genre = new Genre(genreId, genreName);
 				
-				// Create Movie object and add to list
+				// To create movie object and add to list
 				Movie movie = new Movie(movieId, title, releaseDate.toLocalDate(), genre, duration, director, summary);
 				movies.add(movie);
 			}
@@ -53,7 +53,7 @@ public class MovieDao {
 	}
 
 	/**
-	 * Lists all movies belonging to a specific genre.
+	 * This method lists all movies belonging to a specific genre.
 	 * 
 	 * @param genreName the name of the genre to filter by
 	 * @return a list of movies in the specified genre
@@ -70,7 +70,7 @@ public class MovieDao {
 			
 			try (ResultSet resultSet = statement.executeQuery()) {
 				while (resultSet.next()) {
-					// Extract movie fields - use "idmovie" not "id"
+					// To extract movie fields 
 					int movieId = resultSet.getInt("idmovie");
 					String title = resultSet.getString("title");
 					Date releaseDate = resultSet.getDate("release_date");
@@ -97,7 +97,7 @@ public class MovieDao {
 	}
 
 	/**
-	 * Adds a new movie to the database and returns it with the generated ID.
+	 * To add a new movie to the database and returns it with the generated ID.
 	 * 
 	 * @param movie the movie to add (without ID)
 	 * @return the movie with its generated ID
