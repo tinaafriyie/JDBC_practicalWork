@@ -18,7 +18,7 @@ public class GenreDao {
 	public List<Genre> listGenres() {
 		List<Genre> genres = new ArrayList<>();
 		
-		try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+		try (Connection connection = DataSourceFactory.getConnection();
 			 Statement statement = connection.createStatement();
 			 ResultSet resultSet = statement.executeQuery("SELECT * FROM genre")) {
 			
@@ -45,7 +45,7 @@ public class GenreDao {
 	 * @return the Genre object if found, null otherwise
 	 */
 	public Genre getGenre(String name) {
-		try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+		try (Connection connection = DataSourceFactory.getConnection();
 			 PreparedStatement statement = connection.prepareStatement("SELECT * FROM genre WHERE name = ?")) {
 			
 			// This prevents SQL injection by using a parameterized query
@@ -75,7 +75,7 @@ public class GenreDao {
 	 * @param name the name of the genre to add
 	 */
 	public void addGenre(String name) {
-		try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+		try (Connection connection = DataSourceFactory.getConnection();
 			 PreparedStatement statement = connection.prepareStatement("INSERT INTO genre(name) VALUES(?)")) {
 			
 			

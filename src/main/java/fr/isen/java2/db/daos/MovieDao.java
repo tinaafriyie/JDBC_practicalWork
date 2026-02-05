@@ -22,7 +22,7 @@ public class MovieDao {
 		
 		String query = "SELECT * FROM movie JOIN genre ON movie.genre_id = genre.idgenre";
 		
-		try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+		try (Connection connection = DataSourceFactory.getConnection();
 			 Statement statement = connection.createStatement();
 			 ResultSet resultSet = statement.executeQuery(query)) {
 			
@@ -63,7 +63,7 @@ public class MovieDao {
 		
 		String query = "SELECT * FROM movie JOIN genre ON movie.genre_id = genre.idgenre WHERE genre.name = ?";
 		
-		try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+		try (Connection connection = DataSourceFactory.getConnection();
 			 PreparedStatement statement = connection.prepareStatement(query)) {
 			
 			statement.setString(1, genreName);
@@ -105,7 +105,7 @@ public class MovieDao {
 	public Movie addMovie(Movie movie) {
 		String query = "INSERT INTO movie(title, release_date, genre_id, duration, director, summary) VALUES(?, ?, ?, ?, ?, ?)";
 		
-		try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+		try (Connection connection = DataSourceFactory.getConnection();
 			 PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 			
 			statement.setString(1, movie.getTitle());

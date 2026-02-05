@@ -18,7 +18,7 @@ public class MovieDaoTestCase {
 	private final MovieDao movieDao = new MovieDao();
 	@BeforeEach
 	public void initDb() throws Exception {
-		Connection connection = DataSourceFactory.getDataSource().getConnection();
+		Connection connection = DataSourceFactory.getConnection();
 		Statement stmt = connection.createStatement();
 		stmt.executeUpdate(
 				"CREATE TABLE IF NOT EXISTS genre (idgenre INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT , name VARCHAR(50) NOT NULL);");
@@ -111,7 +111,7 @@ public class MovieDaoTestCase {
 		assertThat(addedMovie.getDirector()).isEqualTo("Christopher Nolan");
 		
 		// Verify it's actually in the database
-		try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+		try (Connection connection = DataSourceFactory.getConnection();
 			 Statement statement = connection.createStatement();
 			 ResultSet resultSet = statement.executeQuery(
 				 "SELECT * FROM movie WHERE title='Inception'")) {
@@ -126,7 +126,7 @@ public class MovieDaoTestCase {
 			assertThat(resultSet.getString("director")).isEqualTo("Christopher Nolan");
 			assertThat(resultSet.next()).isFalse();
 		}
+}
 
 
-
-	}}
+	}
