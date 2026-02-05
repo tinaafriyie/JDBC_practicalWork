@@ -1,14 +1,21 @@
 package fr.isen.java2.db.daos;
 
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import fr.isen.java2.db.entities.Genre;
+import fr.isen.java2.db.entities.Movie;
+
 public class MovieDaoTestCase {
+	private final MovieDao movieDao = new MovieDao();
 	@BeforeEach
 	public void initDb() throws Exception {
 		Connection connection = DataSourceFactory.getDataSource().getConnection();
@@ -37,18 +44,89 @@ public class MovieDaoTestCase {
 		connection.close();
 	}
 	
-	 @Test
-	 public void shouldListMovies() {
-		 fail("Not yet implemented");
-	 }
+
+	@Test
+	public void shouldListMovies() {
+	// WHEN
+	List<Movie> movies = movieDao.listMovies();
 	
-	 @Test
-	 public void shouldListMoviesByGenre() {
-		 fail("Not yet implemented");
-	 }
-	
-	 @Test
-	 public void shouldAddMovie() throws Exception {
-		 fail("Not yet implemented");
-	 }
+	// THEN
+	assertThat(movies).hasSize(3);
+	assertThat(movies)
+		.extracting("id", "title", "genre.name")
+		.containsExactlyInAnyOrder(
+			tuple(1, "Title 1", "Drama"),
+			tuple(2, "My Title 2", "Comedy"),
+			tuple(3, "Third title", "Comedy")
+		);
 }
+
+	@Test
+	public void shouldListMoviesByGenre() {
+	// WHEN
+	List<Movie> dramaMovies = movieDao.listMoviesByGenre("Drama");
+	
+	// THEN
+	assertThat(dramaMovies).hasSize(1);  // Only 1 Drama movie!
+	assertThat(dramaMovies)
+		.extracting("title", "genre.name")
+		.containsExactlyInAnyOrder(
+			tuple("Title 1", "Drama")
+		);
+}
+
+	@Test
+	public void shouldListMoviesByGenreWithNoResults() {
+		// WHEN
+		List<Movie> actionMovies = movieDao.listMoviesByGenre("Action");
+		
+		// THEN
+		assertThat(actionMovies).isEmpty();
+	}
+
+	@Test
+	public void shouldAddMovie() throws Exception {
+		// GIVEN
+		Genre thriller = new Genre(3, "Thriller");
+		Movie newMovie = new Movie(
+			"Inception",
+			LocalDate.of(2010, 7, 16),
+			thriller,
+			148,
+			"Christopher Nolan",
+			"A thief who steals corporate secrets"
+		);
+		
+		// WHEN
+		Movie addedMovie = movieDao.addMovie(newMovie);
+		
+		// THEN
+		// Verify the returned movie has an ID
+		assertThat(addedMovie).isNotNull();
+		assertThat(addedMovie.getId()).isNotNull();
+		assertThat(addedMovie.getTitle()).isEqualTo("Inception");
+		assertThat(addedMovie.getReleaseDate()).isEqualTo(LocalDate.of(2010, 7, 16));
+		assertThat(addedMovie.getGenre().getId()).isEqualTo(3);
+		assertThat(addedMovie.getDuration()).isEqualTo(148);
+		assertThat(addedMovie.getDirector()).isEqualTo("Christopher Nolan");
+		
+		// Verify it's actually in the database
+		try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+			 Statement statement = connection.createStatement();
+			 ResultSet resultSet = statement.executeQuery(
+				 "SELECT * FROM movie WHERE title='Inception'")) {
+			
+			assertThat(resultSet.next()).isTrue();
+			assertThat(resultSet.getInt("idmovie")).isEqualTo(addedMovie.getId());
+			assertThat(resultSet.getString("title")).isEqualTo("Inception");
+			assertThat(resultSet.getDate("release_date").toLocalDate())
+				.isEqualTo(LocalDate.of(2010, 7, 16));
+			assertThat(resultSet.getInt("genre_id")).isEqualTo(3);
+			assertThat(resultSet.getInt("duration")).isEqualTo(148);
+			assertThat(resultSet.getString("director")).isEqualTo("Christopher Nolan");
+			assertThat(resultSet.next()).isFalse();
+		}
+
+
+
+	}}
