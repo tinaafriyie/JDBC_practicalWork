@@ -66,7 +66,7 @@ public class GenreDao {
 			e.printStackTrace();
 		}
 		
-		// Return Optional.empty() if no genre was found or if an exception occurred
+		// This returns Optional.empty() if no genre was found or if an exception occurred
 		return Optional.empty();
 		
 	}
